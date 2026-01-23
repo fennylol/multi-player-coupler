@@ -29,4 +29,4 @@ func _ready() -> void:
 	add_child(ipf)
 
 #func touch_something_with_my_own_little_pingus(Addr: String, Port: int) -> void: if my_own_little_pingus: my_own_little_pingus._send_a_pingus(Addr, Port)
-func touch_something_with_my_own_little_pingus(Addr: String, _Port: int) -> void: if my_own_little_pingus: add_child(my_own_little_pingus); my_own_little_pingus.target = Addr
+func touch_something_with_my_own_little_pingus(Addr: String, _Port: int) -> void: if my_own_little_pingus: add_child(my_own_little_pingus); my_own_little_pingus.target = Addr; my_own_little_pingus.scanning = true

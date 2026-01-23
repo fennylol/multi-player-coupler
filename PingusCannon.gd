@@ -3,6 +3,9 @@ class_name PingusCannon
 
 var udp := PacketPeerUDP.new()
 var random_sauce := PackedByteArray()
+
+var scanning: bool = false
+
 var target: String = ""
 var target_port: int = 0
 
@@ -13,8 +16,11 @@ func _init(local_port: int = 0) -> void:
 func _process(_delta: float) -> void:
 	if udp.get_available_packet_count() > 0:
 		var response = udp.get_packet()
-		print("PINGUS RECIEVED!!!\n", response)
-	elif target != "":
+		target = udp.get_packet_ip()
+		target_port = udp.get_packet_port()
+		scanning = false
+		print("PINGUS RECIEVED!!!\n", response, "\n from ", target, ":", target_port)
+	elif scanning and target != "":
 		_send_a_pingus(target)
 
 
