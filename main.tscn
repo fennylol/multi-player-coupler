@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://dwct2biu5dngj"]
+
+[ext_resource type="Script" uid="uid://c3ct3gf351xne" path="res://main.gd" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://sapfhmxhqp7y" path="res://menu.tscn" id="2_0xm2m"]
+
+[node name="Node2D" type="Node"]
+script = ExtResource("1_ig7tw")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Menu" parent="CanvasLayer" instance=ExtResource("2_0xm2m")]
+size_flags_vertical = 4
