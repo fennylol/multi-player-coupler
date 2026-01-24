@@ -50,10 +50,13 @@ func _process(delta: float) -> void:
 		PingusStates.SPRAYING:
 			spray_pingus()
 			if Udp.get_available_packet_count() > 0:
-				TargetAddr = Udp.get_packet_ip()
-				TargetPort = Udp.get_packet_port()
+				var msg = Udp.get_packet()
+				var pkt_addr = Udp.get_packet_ip()
+				var pkt_port = Udp.get_packet_port()
+				TargetAddr = pkt_addr
+				TargetPort = pkt_port
 				message_recieved.emit("Establishing connection to " + TargetAddr + ":" + str(TargetPort))
-				if TargetAddr != "" and TargetPort != -1:
+				if TargetAddr != "" and TargetPort >= 1:
 					PingusState = PingusStates.INFORMING
 		# INFORMING: the PingusPrime has recieved a valid packet. it is sending
 		# the target's port to the target.
@@ -65,6 +68,7 @@ func _process(delta: float) -> void:
 				var msg := Udp.get_packet()
 				if msg.size() != 16:
 					ExternPort = int(msg.get_string_from_utf8())
+					message_recieved.emit("Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort))
 					PingusState = PingusStates.CONNECTED
 		# CONNECTED: both the PingusPrime and the target are aware of each other.
 		# continually send pings to keep the connection alive.
@@ -100,10 +104,10 @@ func spray_pingus() -> void:
 # PingusStates.INFORMING
 func inform_pingus() -> void:
 	var count = 0
-	while count < 10:
+	while count < 100:
 		count += 1
 		Udp.set_dest_address(TargetAddr, TargetPort)
-		var packet = PackedByteArray(PackedInt32Array([TargetPort]))
+		var packet = PackedByteArray([TargetPort])
 		var send_err = Udp.put_packet(packet)
 		if send_err != OK: printerr("Failed to send pingus to ", TargetAddr, ":", TargetPort)
 		elif count == 10: message_recieved.emit("Informing " + TargetAddr +" at port: " + str(TargetPort))
