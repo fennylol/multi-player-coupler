@@ -36,12 +36,12 @@ layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.5
 
-[node name="Label" type="TextEdit" parent="HBoxContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_horizontal = 4
+size_flags_vertical = 6
 size_flags_stretch_ratio = 0.25
 text = "YOUR IP: PEE.POO.CUM.POO:WEINER"
-editable = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
@@ -60,6 +60,7 @@ text = "CONNECT!"
 
 [node name="Label2" type="Label" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
 size_flags_vertical = 6
 size_flags_stretch_ratio = 0.25
 
