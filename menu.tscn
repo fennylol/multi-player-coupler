@@ -44,6 +44,7 @@ size_flags_stretch_ratio = 0.25
 text = "YOUR IP: PEE.POO.CUM.POO:WEINER"
 
 [node name="IPfields" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.25
@@ -58,20 +59,34 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "CONNECT!"
 
-[node name="MSGfields" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
-visible = false
+[node name="MSGfields" type="VBoxContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="chatlog" type="TextEdit" parent="HBoxContainer/VBoxContainer/MSGfields"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+placeholder_text = "messages will apear here!"
+editable = false
+
+[node name="MSGfields" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/MSGfields"]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 0.25
+size_flags_stretch_ratio = 0.0
 
-[node name="TextEdit" type="TextEdit" parent="HBoxContainer/VBoxContainer/MSGfields"]
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer/VBoxContainer/MSGfields/MSGfields"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 placeholder_text = "send a message to your friend!"
 
-[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/MSGfields"]
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/MSGfields/MSGfields"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
 text = "SEND!"
 
 [node name="Label2" type="Label" parent="HBoxContainer/VBoxContainer"]

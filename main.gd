@@ -5,8 +5,8 @@ var my_own_little_pingus: PingusPrime = PingusPrime.new()
 
 func _ready() -> void:
 	menu.connect_button_pressed.connect(touch_something_with_my_own_little_pingus)
-	menu.send_msg_button_pressed.connect()
-	my_own_little_pingus.message_recieved.connect(_print_message)
+	menu.send_msg_button_pressed.connect(touch_something_with_my_own_little_stringus)
+	my_own_little_pingus.message_recieved.connect(_recieve_message)
 	my_own_little_pingus.set_name("my_own_little_pingus")
 	add_child(my_own_little_pingus)
 	
@@ -36,7 +36,11 @@ func touch_something_with_my_own_little_stringus(Msg: String) -> void:
 	if my_own_little_pingus:
 		my_own_little_pingus.send_stringus(Msg)
 
-func _print_message(msg: String) -> void:
-	menu.MESSAGE_LABEL.text = msg
+func _recieve_message(Msg: String, Type: PingusPrime.SignalTypes) -> void:
+	match Type:
+		PingusPrime.SignalTypes.DATA:
+			menu._append_to_chatlog(Msg)
+		PingusPrime.SignalTypes.CONTROL:
+			menu.MESSAGE_LABEL.text = "[THEM]: " + Msg
 	if my_own_little_pingus.PingusState == PingusPrime.PingusStates.CONNECTED:
 		menu._toggle_fields(true)

@@ -5,9 +5,10 @@ class_name MenuNode
 @onready var IP_FIELDS      : HBoxContainer = $HBoxContainer/VBoxContainer/IPfields
 @onready var IP_ENTRY_BOX   : TextEdit      = $HBoxContainer/VBoxContainer/IPfields/TextEdit
 @onready var CONNECT_BUTTON : Button        = $HBoxContainer/VBoxContainer/IPfields/Button
-@onready var MSG_FIELDS     : HBoxContainer = $HBoxContainer/VBoxContainer/MSGfields
-@onready var MSG_ENTRY_BOX  : TextEdit      = $HBoxContainer/VBoxContainer/MSGfields/TextEdit
-@onready var SEND_MSG_BUTTON: Button        = $HBoxContainer/VBoxContainer/MSGfields/Button
+@onready var MSG_FIELDS     : VBoxContainer = $HBoxContainer/VBoxContainer/MSGfields
+@onready var CHAT_LOG       : TextEdit      = $HBoxContainer/VBoxContainer/MSGfields/chatlog
+@onready var MSG_ENTRY_BOX  : LineEdit      = $HBoxContainer/VBoxContainer/MSGfields/MSGfields/LineEdit
+@onready var SEND_MSG_BUTTON: Button        = $HBoxContainer/VBoxContainer/MSGfields/MSGfields/Button
 @onready var MESSAGE_LABEL  : Label         = $HBoxContainer/VBoxContainer/Label2
 signal connect_button_pressed(Address: String)
 signal send_msg_button_pressed(Message: String)
@@ -45,4 +46,9 @@ func _on_connect_button_pressed() -> void:
 # ========== #
 func _on_send_msg_button_pressed() -> void:
 	var input_text = MSG_ENTRY_BOX.text.strip_edges()
+	MSG_ENTRY_BOX.text = ""
+	_append_to_chatlog("[YOU]: " + input_text)
 	send_msg_button_pressed.emit(input_text)
+func _append_to_chatlog(Msg: String) -> void:
+	CHAT_LOG.text += Msg+"\n" 
+	CHAT_LOG.scroll_vertical = CHAT_LOG.get_line_count()

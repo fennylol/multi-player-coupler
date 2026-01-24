@@ -28,7 +28,8 @@ var  ExternPort : int           = -1:
 var  LastPingus : float         = -1
 const PINGUSTIME: float         = 15.0
 const KEEPALIVEPINGUS: int      = 42067
-signal message_recieved(msg: String)
+enum SignalTypes {DATA, CONTROL}
+signal message_recieved(msg: String, type: SignalTypes)
 
 func _init(local_port: int = 0) -> void:
 	var bind_err = Udp.bind(local_port)
@@ -42,7 +43,7 @@ func _process(delta: float) -> void:
 		PingusStates.NOT_STARTED:
 			if TargetAddr != "" and TargetPort == -1:
 				PingusState = PingusStates.SPRAYING
-				message_recieved.emit("Attempting to connect to " + TargetAddr)
+				message_recieved.emit("Attempting to connect to " + TargetAddr, SignalTypes.CONTROL)
 		# SPRAYING: the PingusPrime is trying every valid port on the target.
 		# (and the target is doing the same.)
 		# -> INFORMING: when a packet is recieved, if it is the bytes 0x00..0x0F,
@@ -57,7 +58,7 @@ func _process(delta: float) -> void:
 				print(pkt, "\n", pkt_ip, "\n", pkt_port)
 				TargetAddr = Udp.get_packet_ip()
 				TargetPort = Udp.get_packet_port()
-				message_recieved.emit("Establishing connection to " + TargetAddr + ":" + str(TargetPort))
+				message_recieved.emit("Establishing connection to " + TargetAddr + ":" + str(TargetPort), SignalTypes.CONTROL)
 				if TargetAddr != "" and TargetPort >= 1:
 					PingusState = PingusStates.INFORMING
 		# INFORMING: the PingusPrime has recieved a valid packet. it is sending
@@ -70,7 +71,7 @@ func _process(delta: float) -> void:
 				var pkt := Udp.get_packet()
 				if pkt.size() == 2:
 					ExternPort = pkt.decode_u16(0)
-					message_recieved.emit("Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort))
+					message_recieved.emit("PingusPrime: Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort), SignalTypes.CONTROL)
 					PingusState = PingusStates.CONNECTED
 		# CONNECTED: both the PingusPrime and the target are aware of each other.
 		# continually send pings to keep the connection alive.
@@ -79,12 +80,10 @@ func _process(delta: float) -> void:
 				var pkt := Udp.get_packet()
 				if Udp.get_packet_ip() == TargetAddr and Udp.get_packet_port() == TargetPort:
 					if pkt.size() == 2:
-						if pkt.decode_u16(0) == ExternPort:
-							print("Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort))
-						elif pkt.decode_u16(0) == KEEPALIVEPINGUS:
-							print("Keeping connection to " + TargetAddr + ":" + str(TargetPort) + " alive from local port " + str(ExternPort))
+						if   pkt.decode_u16(0) == ExternPort     : message_recieved.emit("Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort), SignalTypes.CONTROL)
+						elif pkt.decode_u16(0) == KEEPALIVEPINGUS: message_recieved.emit(TargetAddr + ":" + str(TargetPort) + " is keeping connection to local port " + str(ExternPort) + " alive", SignalTypes.CONTROL)
 					else:
-						message_recieved.emit(pkt.get_string_from_utf8())
+						message_recieved.emit(pkt.get_string_from_utf8(), SignalTypes.DATA)
 			LastPingus += delta
 			if LastPingus >= PINGUSTIME:
 				LastPingus -= PINGUSTIME
@@ -127,10 +126,10 @@ func timed_pingus() -> void:
 	packet.encode_u16(0, KEEPALIVEPINGUS)
 	var send_err = Udp.put_packet(packet)
 	if send_err != OK: printerr("Failed to send keepalive to ", TargetAddr, ":", TargetPort)
-	else: message_recieved.emit("Preventing timeout with " + TargetAddr)
+	else: message_recieved.emit("Preventing timeout with " + TargetAddr + ":" + str(TargetPort), SignalTypes.CONTROL)
 func send_stringus(msg: String) -> void:
 	Udp.set_dest_address(TargetAddr, TargetPort)
-	var strarr = PackedStringArray([msg, "pingus ba bingus"])
+	var strarr = PackedStringArray([msg])
 	var send_err = Udp.put_packet(strarr.to_byte_array())
 	if send_err != OK: printerr("Failed to send stringus to ", TargetAddr, ":", TargetPort)
-	else: message_recieved.emit("Sent stringus to " + TargetAddr + ":" + str(TargetPort))
+	else: message_recieved.emit("Sent message to " + TargetAddr + ":" + str(TargetPort), SignalTypes.CONTROL)
