@@ -27,6 +27,7 @@ var  ExternPort : int           = -1:
 #var  PairedPorts: Array[int]    = []
 var  LastPingus : float         = -1
 const PINGUSTIME: float         = 15.0
+const KEEPALIVEPINGUS: int      = 42067
 signal message_recieved(msg: String)
 
 func _init(local_port: int = 0) -> void:
@@ -50,9 +51,6 @@ func _process(delta: float) -> void:
 		PingusStates.SPRAYING:
 			spray_pingus()
 			if Udp.get_available_packet_count() > 0:
-				var pkt = Udp.get_packet()
-				var pkt_addr = Udp.get_packet_ip()
-				var pkt_port = Udp.get_packet_port()
 				TargetAddr = Udp.get_packet_ip()
 				TargetPort = Udp.get_packet_port()
 				message_recieved.emit("Establishing connection to " + TargetAddr + ":" + str(TargetPort))
@@ -75,9 +73,14 @@ func _process(delta: float) -> void:
 		PingusStates.CONNECTED:
 			if Udp.get_available_packet_count() > 0:
 				var pkt := Udp.get_packet()
-				var msg := pkt.decode_u16(0)
-				print("Recived PINGUS:", msg)
-			
+				if Udp.get_packet_ip() == TargetAddr and Udp.get_packet_port() == TargetPort:
+					if pkt.size() == 2:
+						if pkt.decode_u16(0) == ExternPort:
+							print("Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort))
+						elif pkt.decode_u16(0) == KEEPALIVEPINGUS:
+							print("Keeping connection to " + TargetAddr + ":" + str(TargetPort) + " alive from local port " + str(ExternPort))
+					else:
+						message_recieved.emit(pkt.get_string_from_utf8())
 			LastPingus += delta
 			if LastPingus >= PINGUSTIME:
 				LastPingus -= PINGUSTIME
@@ -100,7 +103,7 @@ func spray_pingus() -> void:
 			0xC, 0xD, 0xE, 0xF
 		])
 		var send_err = Udp.put_packet(packet)
-		if send_err != OK: printerr("Failed to send pingus to ", TargetAddr, ":", TargetPort)
+		if send_err != OK: printerr("Failed to send spray to ", TargetAddr, ":", TargetPort)
 		elif not TargetPort%1000: message_recieved.emit("Spraying packet #" + str(TargetPort) + " to " + TargetAddr)
 # PingusStates.INFORMING
 func inform_pingus() -> void:
@@ -111,13 +114,19 @@ func inform_pingus() -> void:
 		var packet = PackedByteArray([0x00,0x00])
 		packet.encode_u16(0, TargetPort)
 		var send_err = Udp.put_packet(packet)
-		if send_err != OK: printerr("Failed to send pingus to ", TargetAddr, ":", TargetPort)
+		if send_err != OK: printerr("Failed to send inform to ", TargetAddr, ":", TargetPort)
 		elif count==1: message_recieved.emit("Informing " + TargetAddr + " at port: " + str(TargetPort))
 # PingusStates.CONNECTED
 func timed_pingus() -> void:
 	Udp.set_dest_address(TargetAddr, TargetPort)
 	var packet = PackedByteArray([0x00,0x00])
-	packet.encode_u16(0, 67)
+	packet.encode_u16(0, KEEPALIVEPINGUS)
 	var send_err = Udp.put_packet(packet)
-	if send_err != OK: printerr("Failed to send pingus to ", TargetAddr, ":", TargetPort)
+	if send_err != OK: printerr("Failed to send keepalive to ", TargetAddr, ":", TargetPort)
 	else: message_recieved.emit("Preventing timeout with " + TargetAddr)
+func send_stringus(msg: String) -> void:
+	Udp.set_dest_address(TargetAddr, TargetPort)
+	var strarr = PackedStringArray([msg, "pingus ba bingus"])
+	var send_err = Udp.put_packet(strarr.to_byte_array())
+	if send_err != OK: printerr("Failed to send stringus to ", TargetAddr, ":", TargetPort)
+	else: message_recieved.emit("Sent stringus to " + TargetAddr + ":" + str(TargetPort))

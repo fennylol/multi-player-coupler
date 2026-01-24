@@ -33,4 +33,6 @@ func touch_something_with_my_own_little_pingus(Addr: String) -> void:
 		my_own_little_pingus.TargetAddr = Addr
 
 func _print_message(msg: String) -> void:
-	print(msg)
+	menu.MESSAGE_LABEL.text = msg
+	if my_own_little_pingus.PingusState == PingusPrime.PingusStates.CONNECTED:
+		menu._toggle_fields(true)

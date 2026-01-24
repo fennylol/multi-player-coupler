@@ -43,20 +43,36 @@ size_flags_vertical = 6
 size_flags_stretch_ratio = 0.25
 text = "YOUR IP: PEE.POO.CUM.POO:WEINER"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="IPfields" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.25
 
-[node name="TextEdit" type="TextEdit" parent="HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="TextEdit" type="TextEdit" parent="HBoxContainer/VBoxContainer/IPfields"]
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "123.45.67.890:12345"
+placeholder_text = "123.45.67.890"
 
-[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/IPfields"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "CONNECT!"
+
+[node name="MSGfields" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="TextEdit" type="TextEdit" parent="HBoxContainer/VBoxContainer/MSGfields"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "send a message to your friend!"
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/MSGfields"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SEND!"
 
 [node name="Label2" type="Label" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
