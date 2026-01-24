@@ -5,6 +5,7 @@ var my_own_little_pingus: PingusPrime = PingusPrime.new()
 
 func _ready() -> void:
 	menu.connect_button_pressed.connect(touch_something_with_my_own_little_pingus)
+	menu.send_msg_button_pressed.connect()
 	my_own_little_pingus.message_recieved.connect(_print_message)
 	my_own_little_pingus.set_name("my_own_little_pingus")
 	add_child(my_own_little_pingus)
@@ -31,6 +32,9 @@ func _ready() -> void:
 func touch_something_with_my_own_little_pingus(Addr: String) -> void:
 	if my_own_little_pingus:
 		my_own_little_pingus.TargetAddr = Addr
+func touch_something_with_my_own_little_stringus(Msg: String) -> void:
+	if my_own_little_pingus:
+		my_own_little_pingus.send_stringus(Msg)
 
 func _print_message(msg: String) -> void:
 	menu.MESSAGE_LABEL.text = msg
