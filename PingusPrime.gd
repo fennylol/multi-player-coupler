@@ -51,6 +51,10 @@ func _process(delta: float) -> void:
 		PingusStates.SPRAYING:
 			spray_pingus()
 			if Udp.get_available_packet_count() > 0:
+				var pkt = Udp.get_packet()
+				var pkt_ip = Udp.get_packet_ip()
+				var pkt_port = Udp.get_packet_port()
+				print(pkt, "\n", pkt_ip, "\n", pkt_port)
 				TargetAddr = Udp.get_packet_ip()
 				TargetPort = Udp.get_packet_port()
 				message_recieved.emit("Establishing connection to " + TargetAddr + ":" + str(TargetPort))
