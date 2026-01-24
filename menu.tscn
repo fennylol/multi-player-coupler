@@ -44,7 +44,6 @@ size_flags_stretch_ratio = 0.25
 text = "YOUR IP: PEE.POO.CUM.POO:WEINER"
 
 [node name="IPfields" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
-visible = false
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.25
@@ -60,6 +59,7 @@ size_flags_horizontal = 3
 text = "CONNECT!"
 
 [node name="MSGfields" type="VBoxContainer" parent="HBoxContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
