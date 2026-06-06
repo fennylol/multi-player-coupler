@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://sapfhmxhqp7y"]
+[gd_scene load_steps=3 format=3 uid="uid://sapfhmxhqp7y"]
 
 [ext_resource type="Script" uid="uid://lssw42yvds31" path="res://menu.gd" id="1_lti8b"]
+[ext_resource type="Texture2D" uid="uid://dbc1mg6i0uk68" path="res://splash.png" id="2_ouk20"]
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -10,6 +11,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_lti8b")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_ouk20")
+expand_mode = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -36,12 +47,32 @@ layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.5
 
-[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer"]
+[node name="YourIP" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 4
+
+[node name="SPACER" type="Control" parent="HBoxContainer/VBoxContainer/YourIP"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.35
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/YourIP"]
+layout_mode = 2
+size_flags_horizontal = 6
 size_flags_vertical = 6
-size_flags_stretch_ratio = 0.25
 text = "YOUR IP: PEE.POO.CUM.POO:WEINER"
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/YourIP"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.2
+text = "copy ip"
+
+[node name="SPACER2" type="Control" parent="HBoxContainer/VBoxContainer/YourIP"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.35
 
 [node name="IPfields" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
