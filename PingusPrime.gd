@@ -14,41 +14,52 @@ const HEADER_SIZE    : int   = TYPE_SIZE + ID_SIZE + ID_SIZE
 const DATA_TYPE_SIZE : int   = 1
 const RETRY_TIME     : float = 2.5
 const MAX_RETRIES    : int   = 5
-const SPRAY_RATE     : int   = 100
-const INFORM_RATE    : int   = 50
-const KEEP_ALIVE_TIME: float = 15.0
+const KEEP_ALIVE_TIME: float = 5.0
 # ========= #
 # variables #
 # ========= #
-var Udp        : PacketPeerUDP = PacketPeerUDP.new()
-var PingusState: PingusStates  = PingusStates.NOT_STARTED
-var PingusTimer: float         = -1
-var TargetAddr : String        = "":
+var Udp         : PacketPeerUDP = PacketPeerUDP.new()
+var PingusState : PingusStates  = PingusStates.NOT_STARTED
+var PingusTimer : float         = -1
+var TargetAddr  : String        = "":
    set(NewAddress):
       var regex = RegEx.new()
       regex.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
       var result = regex.search(NewAddress)
       if result: TargetAddr = NewAddress
-var TargetPort : int           = -1:
+var TargetPort  : int           = -1:
    set(NewPort):
       var regex = RegEx.new()
       regex.compile("^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$")
       var result = regex.search(str(NewPort))
       if result: TargetPort = NewPort
-var TargetID   : int           = 0
-var ExternAddr : String        = "":
+var TargetID    : int           = 0
+var ExternAddr  : String        = "":
    set(NewAddress):
       var regex = RegEx.new()
       regex.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
       var result = regex.search(NewAddress)
       if result: ExternAddr = NewAddress
-var ExternPort : int           = -1:
+var ExternPort  : int           = -1:
    set(NewPort):
       var regex = RegEx.new()
       regex.compile("^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$")
       var result = regex.search(str(NewPort))
       if result: ExternPort = NewPort
-var NetworkID  : int           = 0
+var NetworkID   : int           = 0
+var SprayPortMin: int           = 49152:
+   set(NewPort):
+      var regex = RegEx.new()
+      regex.compile("^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$")
+      var result = regex.search(str(NewPort))
+      if result: SprayPortMin = NewPort
+var SprayPortMax: int           = 65535:
+   set(NewPort):
+      var regex = RegEx.new()
+      regex.compile("^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$")
+      var result = regex.search(str(NewPort))
+      if result: SprayPortMax = NewPort
+var SprayRate   : int           = 3000
 # ======= #
 # signals #
 # ======= #
@@ -56,11 +67,8 @@ signal recieved_data(sender_id: int, data_type: int, data: PackedByteArray)
 signal connection_established(sender_id: int)
 
 func _ready() -> void:
-   var bind_err = ERR_CANT_CREATE
-   while bind_err != OK:
-      var local_port: int = (NetworkID % 65533) + 1
-      bind_err = Udp.bind(local_port)
-      if bind_err != OK: _discover_network_id()
+   var bind_err = Udp.bind(0)
+   if bind_err != OK: printerr("PingusPrime: failed to bind UDP socket"); return
 func _init(external_address: String = "", network_id: int = 0) -> void:
    NetworkID = network_id
    ExternAddr = external_address
@@ -116,7 +124,7 @@ func _process(delta: float) -> void:
       # -> INFORMING: when a SPRAY or INFORM packet is recieved, the target
       # has found one of our ports so lock onto theirs and start informing.
       PingusStates.SPRAYING:
-         _spray_pingus()
+         _spray_pingus(delta)
          while Udp.get_available_packet_count() > 0:
             var pkt = Udp.get_packet()
             # packet validation
@@ -143,7 +151,7 @@ func _process(delta: float) -> void:
       # -> CONNECTED: when an INFORM packet is recieved, the target is also
       # aware of the connection.
       PingusStates.INFORMING:
-         _inform_pingus()
+         _inform_pingus(delta)
          while Udp.get_available_packet_count() > 0:
             var pkt := Udp.get_packet()
             # packet validation
@@ -221,20 +229,22 @@ func _make_header(pkt_type: PingusTypes) -> PackedByteArray:
 func _emit_control(msg: String, sender_id: int = 0) -> void:
    recieved_data.emit(sender_id if sender_id else NetworkID, DataTypes.CONTROL, msg.to_utf8_buffer())
 # PingusStates.SPRAYING
-func _spray_pingus() -> void:
-   var count = SPRAY_RATE
+func _spray_pingus(delta) -> void:
+   var count := ceili(SprayRate * delta)
    while count > 0:
       count -= 1
       TargetPort -= 1
-      if TargetPort >= 65535 or TargetPort < 1: TargetPort = 65534
+      if TargetPort > SprayPortMax or TargetPort < SprayPortMin:
+         TargetPort = SprayPortMax
+
       Udp.set_dest_address(TargetAddr, TargetPort)
       var send_err = Udp.put_packet(_make_header(PingusTypes.SPRAY))
       if send_err != OK: _emit_control("ERROR: failed to send spray to " + TargetAddr + ":" + str(TargetPort))
-      elif not TargetPort % 107: _emit_control("Spraying port " + str(TargetPort) + " on " + TargetAddr)
+   _emit_control("Spraying port " + str(TargetPort) + " on " + TargetAddr)
 # PingusStates.INFORMING
-func _inform_pingus() -> void:
+func _inform_pingus(delta) -> void:
    Udp.set_dest_address(TargetAddr, TargetPort)
-   var count = INFORM_RATE
+   var count = ceili((SprayRate/5.0) * delta)
    while count > 0:
       count -= 1
       var pkt := _make_header(PingusTypes.INFORM)
@@ -242,7 +252,7 @@ func _inform_pingus() -> void:
       pkt.encode_u16(HEADER_SIZE, TargetPort)
       var send_err = Udp.put_packet(pkt)
       if send_err != OK: _emit_control("ERROR: failed to send inform to " + TargetAddr + ":" + str(TargetPort))
-      elif count == 1: _emit_control("Informing " + TargetAddr + " at port: " + str(TargetPort))
+   _emit_control("Informing " + TargetAddr + " at port: " + str(TargetPort))
 # PingusStates.CONNECTED
 func _timed_pingus() -> void:
    Udp.set_dest_address(TargetAddr, TargetPort)
