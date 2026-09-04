@@ -89,20 +89,20 @@ signal connection_established(sender_id: int, address: String, port: int)
 # ===== #
 # setup #
 # ===== #
-func _init(external_address: String = "", network_id: int = 0) -> void:
+func _init(external_address: String = "", network_id: int = 0, custom_stun_addr: String = "") -> void:
    NetworkID = network_id
    ExternAddr = external_address
    var bind_err = _Udp.bind(0)
    if bind_err != OK: _emit_control("ERROR: OneTruePingus failed to bind UDP socket"); return
    if NetworkID  == 0: _discover_network_id()
-   if ExternAddr == "": _discover_address()
+   if ExternAddr == "": _discover_address(custom_stun_addr)
 func _discover_network_id() -> void:
    while NetworkID == 0:
       seed(((Time.get_unix_time_from_system()*100000)+_Udp.get_local_port()) as int)
       NetworkID = randi()
-func _discover_address() -> void:
+func _discover_address(custom_stun_addr: String = "") -> void:
    _FetchingAddress = true
-   var ag := AddressGopher.new(_Udp)
+   var ag := AddressGopher.new(_Udp, custom_stun_addr)
 
    ag.info_fetching_complete.connect(
       func(result: AddressGopher.InfoFetchingResults, address: String = "", port: int = 0):
@@ -299,7 +299,7 @@ class AddressGopher extends Node:
    var   CustomStunUrl     : String          = ""
    var   _SharedUdp        : PacketPeerUDP   = null
 
-   func _init(shared_udp: PacketPeerUDP, custom_stun_server_addr: String = "", ) -> void:
+   func _init(shared_udp: PacketPeerUDP, custom_stun_server_addr: String = "") -> void:
       _SharedUdp    = shared_udp
       CustomStunUrl = custom_stun_server_addr
    func _ready() -> void: attempt_info_fetch()
