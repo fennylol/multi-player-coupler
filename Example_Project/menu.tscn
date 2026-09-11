@@ -1,0 +1,182 @@
+[gd_scene format=3 uid="uid://sapfhmxhqp7y"]
+
+[ext_resource type="Script" uid="uid://lssw42yvds31" path="res://Example_Project/menu.gd" id="1_lti8b"]
+[ext_resource type="Texture2D" uid="uid://dbc1mg6i0uk68" path="res://Example_Project/splash.png" id="2_ouk20"]
+
+[node name="Menu" type="Control" unique_id=1864392696]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lti8b")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1544644984]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_ouk20")
+expand_mode = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=890787174]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+
+[node name="SPACER" type="Control" parent="HBoxContainer" unique_id=1692355617]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=954507096]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SPACER" type="Control" parent="HBoxContainer/VBoxContainer" unique_id=269895484]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="WAN_vs_LAN_box" type="HBoxContainer" parent="HBoxContainer/VBoxContainer" unique_id=1386407957]
+layout_mode = 2
+
+[node name="global_button" type="Button" parent="HBoxContainer/VBoxContainer/WAN_vs_LAN_box" unique_id=712101999]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "Play Globally"
+
+[node name="spacer" type="Control" parent="HBoxContainer/VBoxContainer/WAN_vs_LAN_box" unique_id=1574151843]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="local_button" type="Button" parent="HBoxContainer/VBoxContainer/WAN_vs_LAN_box" unique_id=1590002401]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Play Locally"
+
+[node name="YourIP" type="HBoxContainer" parent="HBoxContainer/VBoxContainer" unique_id=628308480]
+layout_mode = 2
+
+[node name="SPACER" type="Control" parent="HBoxContainer/VBoxContainer/YourIP" unique_id=1652001139]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.35
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/YourIP" unique_id=1001393795]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+text = "YOUR IP: PEE.POO.CUM.POO:WEINER"
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/YourIP" unique_id=824649747]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.2
+text = "copy ip"
+
+[node name="SPACER2" type="Control" parent="HBoxContainer/VBoxContainer/YourIP" unique_id=448146493]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.35
+
+[node name="NameBox" type="HBoxContainer" parent="HBoxContainer/VBoxContainer" unique_id=233220469]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer/VBoxContainer/NameBox" unique_id=1818026537]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+placeholder_text = "Your Name Here"
+max_length = 25
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/NameBox" unique_id=1781356594]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+text = "change name"
+
+[node name="IPfields" type="HBoxContainer" parent="HBoxContainer/VBoxContainer" unique_id=889139353]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="TextEdit" type="TextEdit" parent="HBoxContainer/VBoxContainer/IPfields" unique_id=1359767768]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "123.45.67.89:12345"
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/IPfields" unique_id=586997055]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CONNECT!"
+
+[node name="peer_list" type="TextEdit" parent="HBoxContainer/VBoxContainer" unique_id=161763713]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.75
+placeholder_text = "no connections..."
+editable = false
+wrap_mode = 1
+
+[node name="MSGfields" type="VBoxContainer" parent="HBoxContainer/VBoxContainer" unique_id=228752266]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="chatlog" type="TextEdit" parent="HBoxContainer/VBoxContainer/MSGfields" unique_id=465666833]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+placeholder_text = "messages will apear here!"
+editable = false
+
+[node name="MSGfields" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/MSGfields" unique_id=43317984]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.0
+
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer/VBoxContainer/MSGfields/MSGfields" unique_id=412978698]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+placeholder_text = "send a message to your friend!"
+
+[node name="Button" type="Button" parent="HBoxContainer/VBoxContainer/MSGfields/MSGfields" unique_id=1924145034]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+text = "SEND!"
+
+[node name="Label2" type="Label" parent="HBoxContainer/VBoxContainer" unique_id=351746511]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+size_flags_stretch_ratio = 0.25
+
+[node name="SPACER2" type="Control" parent="HBoxContainer/VBoxContainer" unique_id=505362986]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="SPACER2" type="Control" parent="HBoxContainer" unique_id=192989149]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
